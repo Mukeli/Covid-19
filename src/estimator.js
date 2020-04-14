@@ -14,32 +14,40 @@ const input = {
     let days = 1000 * 60 * 60 * 24;
     return Math.floor((Date.now() - new Date("March 30,2020")) / days);
   },*/
-  covid19ImpactEstimator: function () {
+  currentlyInfected: function () {
     this.currentlyInfected = this.reportedCases * 10;
-    this.severeImpact = this.reportedCases * 50;
+
     return `
      Currently Infected is: ${this.currentlyInfected}
-     Severe Impact is:${this.severeImpact}`;
+     `;
   },
-  infectionsByRequestedTime: function (factor) {
-    this.impact = this.currentlyInfected * factor;
-    this.severeImpact = this.severeImpact * factor;
-    this.severeCasesByRequestedTime = (this.severeImpact * 15) / 100;
-    this.hospitalBedsByRequestedTime =
-      //this.severeCasesByRequestedTime - (this.totalHospitalBeds * 35) / 100;
-      Math.floor(
-        (this.totalHospitalBeds * 35) / 100 - this.severeCasesByRequestedTime
-      );
-    this.casesForICUByRequestedTime = (5 / 100) * this.impact;
-    this.casesForVentilatorsByRequestedTime = Math.floor(
-      (2 / 100) * this.impact
+  severeImpact: function (factor) {
+    this.severeImpact = this.reportedCases * 50;
+    this.infectionsByRequestedTime = this.severeImpact * factor;
+    this.severeCasesByRequestedTime =
+      (this.infectionsByRequestedTime * 15) / 100;
+    this.hospitalBedsByRequestedTime = Math.floor(
+      (this.totalHospitalBeds * 35) / 100 - this.severeCasesByRequestedTime
     );
-    this.dollarsInFlight = Math.floor((this.impact * 0.65 * 1.5) / 30);
     return `
-    Infections By requested time Impact is: ${this.impact} 
-    Infections By requested time severe Impact is:${this.severeImpact} 
-    Severe Cases By Requested Time is:${this.severeCasesByRequestedTime} 
-    Hospital Beds by Requested time is:${this.hospitalBedsByRequestedTime}  
+     Severe Impact is:${this.severeImpact}
+     Severe Impact infections by requested time is:${this.infectionsByRequestedTime}
+     Severe cases by Requested Time:${this.severeCasesByRequestedTime}
+     Hospital Beds by Requested Time:${this.hospitalBedsByRequestedTime}`;
+  },
+  impact: function (factor) {
+    this.impact = this.reportedCases * 10;
+    this.infectionsByRequestedTime = this.impact * factor;
+    this.casesForICUByRequestedTime =
+      (5 / 100) * this.infectionsByRequestedTime;
+    this.casesForVentilatorsByRequestedTime = Math.floor(
+      (2 / 100) * this.infectionsByRequestedTime
+    );
+    this.dollarsInFlight = Math.floor(
+      (this.infectionsByRequestedTime * 0.65 * 1.5) / 30
+    );
+    return `
+    Infections By requested time Impact is: ${this.infectionsByRequestedTime}  
     Cases For ICU By Requested Time is:${this.casesForICUByRequestedTime} 
     Cases for Ventilators By requested Time is:${this.casesForVentilatorsByRequestedTime} 
     Dollars Lost is:$${this.dollarsInFlight}`;
@@ -52,6 +60,8 @@ const output = {
   severeImpact: {}, // your severe case estimation
 };
 
-console.log(input.covid19ImpactEstimator());
-console.log(input.infectionsByRequestedTime(512));
+console.log(input.currentlyInfected());
+console.log(input.severeImpact(512));
+console.log(input.impact(512));
+
 
